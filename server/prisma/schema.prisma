@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// enum Role{
+//   Admin
+// }
+
+model Agent {
+  id                              Int       @id @default(autoincrement())
+  name                            String
+  email                           String    @unique
+  password                        String
+  approved                        Boolean   @default(false)
+  isEmailVerified                 Boolean   @default(false)
+  refreshToken                    String?
+  forgotPasswordToken             String?
+  forgotPasswordTokenExpiresAt    DateTime?
+  emailVerificationToken          String?
+  emailVerificationTokenExpiresAt DateTime?
+  createdAt                       DateTime  @default(now())
+  tours                           Tour[]
+}
+
+model User {
+  id                              Int       @id @default(autoincrement())
+  name                            String
+  email                           String    @unique
+  password                        String
+  role                            String    @default("USER")
+  isEmailVerified                 Boolean   @default(false)
+  refreshToken                    String?
+  forgotPasswordToken             String?
+  forgotPasswordTokenExpiresAt    DateTime?
+  emailVerificationToken          String?
+  emailVerificationTokenExpiresAt DateTime?
+  createdAt                       DateTime  @default(now())
+  bookings                        Booking[]
+}
+
+model Image {
+  id     Int    @id @default(autoincrement())
+  url    String
+  tourId Int // Foreign key to Tour
+  tour   Tour   @relation(fields: [tourId], references: [id])
+}
+
+model Tour {
+  id           Int       @id @default(autoincrement())
+  title        String
+  description  String
+  price        Float
+  comparePrice Float
+  city         String
+  state        String
+  country      String
+  status       String    @default("DRAFT")
+  images       Image[]
+  agentId      Int
+  agent        Agent     @relation(fields: [agentId], references: [id])
+  bookings     Booking[]
+  createdAt    DateTime  @default(now())
+}
+
+model Booking {
+  id            Int      @id @default(autoincrement())
+  userId        Int
+  tourId        Int
+  bookingDate   DateTime
+  status        String   @default("PENDING")
+  paymentStatus String   @default("unpaid")
+  user          User     @relation(fields: [userId], references: [id])
+  tour          Tour     @relation(fields: [tourId], references: [id])
+}
