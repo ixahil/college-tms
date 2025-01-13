@@ -12,8 +12,20 @@ import Image from "next/image";
 import SearchComponent from "./_components/shared/search";
 import SectionLayout from "./_components/layouts/section-layout";
 import { data } from "@/configs/data";
+import {
+  getFeaturedTours,
+  getInternationalTours,
+  getTours,
+} from "@/lib/api/queries/tour";
+import Link from "next/link";
 
-const HomePage = () => {
+const HomePage = async () => {
+  const { data: topdestinations } = await getTours(
+    "state=Kerala&state=Goa&state=Himachal Pradesh&state=Tamil Nadu&state=Punjab"
+  );
+  const { data: featuredDestination } = await getFeaturedTours("");
+  const { data: internationalDestination } = await getInternationalTours("");
+
   return (
     <>
       <div className="relative w-full min-h-screen bg-gray-100">
@@ -28,12 +40,14 @@ const HomePage = () => {
         </div>
         <SearchComponent className="absolute inset-0" />
       </div>
-      <DestinationTabs
-        topDestinations={data.topDestinations}
-        title={"Explore Top Destinations by Region"}
-      />
+      <SectionLayout
+        title="Top Destinations By States"
+        view={{ url: "/tours", label: "View All" }}
+      >
+        <DestinationTabs topDestinations={topdestinations?.tours} />
+      </SectionLayout>
       <SectionLayout title="Popular Destinations">
-        <HorizontalSlider items={data.popularDestinations} />
+        <HorizontalSlider data={featuredDestination?.tours} />
       </SectionLayout>
       <section>
         <div className="relative h-[75vh] w-full">
@@ -68,29 +82,29 @@ const HomePage = () => {
           </div>
         </div>
       </section>
-      <SectionLayout
+      {/* <SectionLayout
         title="Holidays by Interest"
         view={{ url: "/holidays", label: "View All" }}
       >
         <HorizontalSlider items={data.holidaysByInterest} />
-      </SectionLayout>
+      </SectionLayout> */}
       <SectionLayout
         title="Top Weekend Destinations"
-        view={{ url: "/holidays", label: "View All" }}
+        view={{ url: "/tours", label: "View All" }}
       >
-        <HorizontalSlider items={data.topWeekendDestinations} />
+        <HorizontalSlider data={featuredDestination?.tours} />
       </SectionLayout>
       <SectionLayout
         title="International Holiday Packages"
-        view={{ url: "/holidays", label: "View All" }}
+        view={{ url: "/tours", label: "View All" }}
       >
-        <GridContainer items={data.internationalHolidayPackages} />
+        <GridContainer data={internationalDestination?.tours} />
       </SectionLayout>
       <SectionLayout
         title="Top India Tourism Experiences"
-        view={{ url: "/holidays", label: "View All" }}
+        view={{ url: "/tours", label: "View All" }}
       >
-        <HorizontalSlider items={data.topIndiaDestinations} />
+        <HorizontalSlider data={featuredDestination?.tours} />
       </SectionLayout>
       <SectionLayout title="Guest Satisfaction is Our Goal">
         <Tabs defaultValue={"Do Dham Yatra"} className="w-full">
@@ -227,75 +241,87 @@ const HomePage = () => {
   );
 };
 
-const DestinationTabs = ({ topDestinations, title }) => {
+const DestinationTabs = ({ topDestinations }) => {
+  const uniqueStates = [...new Set(topDestinations.map((dest) => dest.state))];
+
   return (
-    <SectionLayout title={title}>
-      <Tabs defaultValue={topDestinations[0].region} className="w-full">
-        <TabsList className="gap-16 border-b-2 pb-4 border-primary-slate-100 rounded-none w-full justify-start">
-          {topDestinations.map((dest) => (
-            <TabsTrigger
-              key={dest.region}
-              value={dest.region}
-              className="text-xl font-medium pb-4 
-                data-[state=active]:border-b-4 border-primary rounded-none 
-                data-[state=active]:shadow-none data-[state=active]:bg-none"
-            >
-              {dest.region}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-        {topDestinations.map((dest) => (
-          <TabsContent
-            key={dest.region}
-            value={dest.region}
-            className="pt-8"
-            style={{ minHeight: "400px" }} // Set a minimum height
+    <Tabs defaultValue={uniqueStates[0]} className="w-full">
+      {/* Tabs List */}
+      <TabsList className="gap-16 border-b-2 pb-4 border-primary-slate-100 rounded-none w-full justify-start">
+        {uniqueStates.map((state) => (
+          <TabsTrigger
+            key={state}
+            value={state}
+            className="text-xl font-medium pb-4 
+              data-[state=active]:border-b-4 border-primary rounded-none 
+              data-[state=active]:shadow-none data-[state=active]:bg-none"
           >
-            <div className="w-full h-full flex gap-4">
-              {/* First Image taking a larger space */}
-              {dest.destinations.length > 0 && (
-                <div className="relative h-0 pb-[40%] flex-1 rounded-lg overflow-hidden shadow-lg transition-transform transform hover:scale-105">
-                  <Image
-                    src={dest.destinations[0].image}
-                    alt={dest.destinations[0].title}
-                    fill
-                    className="object-cover"
-                  />
-                  <div className="absolute text-white font-bold text-xl bottom-5 left-5 flex flex-col">
-                    <span>{dest.destinations[0].title}</span>
-                    <span>{dest.destinations[0].packages}</span>
-                  </div>
-                </div>
-              )}
-              {/* Remaining Images in a grid */}
-              <div className="grid grid-cols-2 gap-4 flex-1">
-                {dest.destinations.slice(1).map((value, index) => (
-                  <div
-                    key={value.title + index}
-                    className="relative h-0 pb-[75%] rounded-lg overflow-hidden shadow-lg transition-transform transform hover:scale-105"
-                  >
+            {state}
+          </TabsTrigger>
+        ))}
+      </TabsList>
+
+      {/* Tabs Content */}
+      {uniqueStates.map((state) => {
+        // Filter tours by the current state
+        const stateTours = topDestinations.filter(
+          (dest) => dest.state === state
+        );
+
+        return (
+          <TabsContent
+            key={state}
+            value={state}
+            className="pt-8"
+            style={{ minHeight: "400px" }}
+          >
+            <div className="w-full h-full flex flex-wrap gap-4">
+              {/* Large Tour - First Tour */}
+              {stateTours.length > 0 && (
+                <div className="relative h-0 pb-[40%] flex-[2] rounded-lg overflow-hidden shadow-lg transition-transform transform hover:scale-105">
+                  <Link href={`/tours/${stateTours[0].id}`}>
                     <Image
-                      src={value.image}
-                      alt={value.title}
+                      src={stateTours[0].images[0]?.url}
+                      alt={stateTours[0].title}
                       fill
                       className="object-cover"
                     />
-                    <div className="absolute text-white font-bold text-lg bottom-5 left-5 flex flex-col">
-                      <span>{value.title}</span>
-                      <span>{value.packages}</span>
+                    <div className="absolute text-white font-bold text-xl bottom-5 left-5 flex flex-col">
+                      <span>{stateTours[0].title}</span>
+                      <span>{`₹${stateTours[0].price}`}</span>
                     </div>
-                  </div>
+                  </Link>
+                </div>
+              )}
+
+              {/* Grid for Remaining Tours */}
+              <div className="grid grid-cols-2 flex-[3] gap-4">
+                {stateTours.slice(1).map((tour) => (
+                  <Link href={`/tours/${tour.id}`} key={tour.title}>
+                    <div className="relative h-0 pb-[75%] rounded-lg overflow-hidden shadow-lg transition-transform transform hover:scale-105">
+                      <Image
+                        src={tour.images[0]?.url}
+                        alt={`${tour.title} - Image`}
+                        fill
+                        className="object-cover"
+                      />
+                      <div className="absolute text-white font-bold text-lg bottom-5 left-5 flex flex-col">
+                        <span>{tour.title}</span>
+                        <span>{`₹${tour.price}`}</span>
+                      </div>
+                    </div>
+                  </Link>
                 ))}
               </div>
             </div>
           </TabsContent>
-        ))}
-      </Tabs>
-    </SectionLayout>
+        );
+      })}
+    </Tabs>
   );
 };
 
-const HorizontalSlider = ({ items }) => {
+const HorizontalSlider = ({ data }) => {
   return (
     <Carousel
       opts={{
@@ -304,21 +330,27 @@ const HorizontalSlider = ({ items }) => {
       className="w-full"
     >
       <CarouselContent>
-        {items.map((item, index) => (
+        {data.map((item, index) => (
           <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/4">
             <div className="p-1">
               <Card>
-                <CardContent className="relative rounded-lg overflow-hidden flex aspect-square items-center justify-center shadow-lg transition-transform transform hover:scale-105">
-                  <Image
-                    src={item.image}
-                    alt={item.title}
-                    layout="fill"
-                    className="object-cover"
-                  />
-                  <div className="absolute bottom-0 bg-black bg-opacity-50 text-white p-2 w-full">
-                    <h3 className="font-bold text-lg">{item.title}</h3>
-                    <span className="text-sm">{item.package}</span>
-                  </div>
+                <CardContent className="p-0">
+                  <Link
+                    className="relative rounded-lg overflow-hidden flex aspect-square items-center justify-center shadow-lg transition-transform transform hover:scale-105"
+                    href={`/tours/${item.id}`}
+                    key={item.title}
+                  >
+                    <Image
+                      src={item.images[0]?.url}
+                      alt={item.title}
+                      layout="fill"
+                      className="object-cover"
+                    />
+                    <div className="absolute bottom-0 bg-black bg-opacity-50 text-white p-2 w-full">
+                      <h3 className="font-bold text-lg">{item.title}</h3>
+                      <span className="text-sm">{item.package}</span>
+                    </div>
+                  </Link>
                 </CardContent>
               </Card>
             </div>
@@ -331,16 +363,16 @@ const HorizontalSlider = ({ items }) => {
   );
 };
 
-const GridContainer = ({ items }) => {
+const GridContainer = ({ data }) => {
   return (
     <div className="grid grid-cols-6 gap-4">
-      {items.map((item) => (
+      {data.map((item) => (
         <div
           key={item.title}
           className="relative rounded-lg overflow-hidden flex aspect-square items-center justify-center shadow-lg transition-transform transform hover:scale-105"
         >
           <Image
-            src={item.image}
+            src={item.images[0].url}
             alt={item.title}
             layout="fill"
             className="object-cover"

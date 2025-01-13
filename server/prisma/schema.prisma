@@ -60,6 +60,7 @@ model Tour {
   state        String
   country      String
   status       String    @default("DRAFT")
+  isFeatured   Boolean?  @default(false)
   images       Image[]
   agentId      Int
   agent        Agent     @relation(fields: [agentId], references: [id])
