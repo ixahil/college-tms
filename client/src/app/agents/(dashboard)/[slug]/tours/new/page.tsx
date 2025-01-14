@@ -3,7 +3,7 @@
 import { ContentLayout } from "@/app/agents/_components/layouts/content-layout";
 import CommonForm from "@/components/forms/form-component";
 import { Form } from "@/components/ui/form";
-import { agentFormControls } from "@/configs/agents";
+import { TourFormControls } from "@/configs/agents";
 import { createTour } from "@/lib/api/mutations/tour";
 import { TourSchema } from "@/schemas/tour";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,6 +25,7 @@ const AddTour = () => {
       country: "",
       status: "DRAFT",
       images: [],
+      itinerary: [],
     },
   });
 
@@ -32,8 +33,9 @@ const AddTour = () => {
     const formData = new FormData();
 
     Object.entries(form.getValues()).forEach(([key, value]) => {
-      // If the value is an array (e.g., files or images), iterate and append each
-      if (Array.isArray(value)) {
+      if (key == "itinerary") {
+        formData.append(key, JSON.stringify(value));
+      } else if (Array.isArray(value)) {
         value.forEach((val) => formData.append(key, val));
       } else {
         formData.append(key, value as string | Blob);
@@ -47,8 +49,10 @@ const AddTour = () => {
 
   return (
     <ContentLayout title="Add Tour" className="container">
+      <pre>{JSON.stringify(form.getValues(), null, 2)}</pre>
+
       <Form {...form}>
-        <CommonForm onSubmit={onSubmit} formControls={agentFormControls} />
+        <CommonForm onSubmit={onSubmit} formControls={TourFormControls} />
       </Form>
     </ContentLayout>
   );

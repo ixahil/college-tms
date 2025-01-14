@@ -17,8 +17,11 @@ import {
 } from "@/components/ui/select";
 import { useFormContext } from "react-hook-form";
 import { CommonFormItem } from "@/types/globals";
-import MultiImageUploader from "../shared/multiple-image-uploader";
+import { MultiImageUploader } from "../shared/multiple-image-uploader";
 import SingleImageUploader from "../shared/single-image-uploader";
+import ItineraryElement from "../shared/ItineraryElement";
+import { Checkbox } from "../ui/checkbox";
+import CountryCityStateSelect from "../shared/CountryCityStateSelect";
 
 type FormElemRendererProps = {
   elem: CommonFormItem;
@@ -58,6 +61,35 @@ export const FormElemRenderer = ({ elem }: FormElemRendererProps) => {
                     disabled={disabled}
                   />
                 </FormControl>
+                {formState.errors[nameKey] && (
+                  <FormMessage>
+                    {formState?.errors[nameKey]?.message as string}
+                  </FormMessage>
+                )}
+              </FormItem>
+            );
+          }}
+        />
+      );
+
+    case "checkbox":
+      return (
+        <FormField
+          control={control}
+          name={nameKey}
+          render={({ field }) => {
+            return (
+              <FormItem className="flex gap-2 items-centers justify-center space-y-0">
+                <FormControl>
+                  <Checkbox
+                    {...field}
+                    required={required}
+                    disabled={disabled}
+                    name={name}
+                  />
+                </FormControl>
+                <FormLabel htmlFor={name}>{label}</FormLabel>
+
                 {formState.errors[nameKey] && (
                   <FormMessage>
                     {formState?.errors[nameKey]?.message as string}
@@ -172,11 +204,12 @@ export const FormElemRenderer = ({ elem }: FormElemRendererProps) => {
       ) : (
         <SingleImageUploader name={name} label={label} required={required} />
       );
-    // case "blank":
-    //   switch (name) {
-    //     case "menuItems":
-    //       return <AddMenuGroup />;
-    //   }
+    case "itinerary":
+      return <ItineraryElement name={name} label={label} required={required} />;
+
+    case "select-specified":
+      return <CountryCityStateSelect label={label} name={name} />;
+
     default:
       return <>Not Implemented</>;
   }

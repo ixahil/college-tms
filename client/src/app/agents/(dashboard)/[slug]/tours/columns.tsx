@@ -23,7 +23,11 @@ export const columns: ColumnDef<TourFields>[] = [
   },
   {
     accessorKey: "location",
-    header: "Location",
+    cell: ({ row }) => {
+      const tour = row.original;
+      const location = `${tour.state}, ${tour.country}`;
+      return location;
+    },
   },
   {
     accessorKey: "status",

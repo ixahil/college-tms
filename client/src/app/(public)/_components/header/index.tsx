@@ -62,6 +62,9 @@ const UserButtons = () => {
     </div>
   ) : (
     <div className="pl-4 flex">
+      <Button variant={"default"} className="text-lg">
+        <Link href={"/agents/login"}>Are you an Agent?</Link>
+      </Button>
       <Button variant={"link"} className="text-lg">
         <Link href={"/login"}>Login</Link>
       </Button>

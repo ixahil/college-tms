@@ -12,7 +12,7 @@ const EditTour = async ({ params }: Props) => {
   const { data, error } = await getAgentTour(id);
 
   return (
-    <ContentLayout title={`Edit Tour ${id}`} className="container">
+    <ContentLayout title={`Edit Tour (${data?.title})`} className="container">
       {error ? (
         <div>
           <p className="text-destructive">Something Went wrong!</p>

@@ -20,14 +20,13 @@ const SearchPage = async () => {
   const page = parseInt(url.searchParams.get("page") || "1", 10);
   const order = url.searchParams.get("order") || "asc";
   const search = url.searchParams.get("search") || "";
-  const city = url.searchParams.getAll("city") || "";
   const state = url.searchParams.getAll("state") || "";
   const country = url.searchParams.get("country") || "";
 
   const { data } = await getTours(
-    `limit=${limit}&page=${page}&order=${order}&search=${search}&city=${city}&state=${state}&country=${country}`
+    `limit=${limit}&page=${page}&order=${order}&search=${search}&state=${state}&country=${country}`
   );
-
+  console.log(data);
   const { data: citiesNStates } = await getCitiesNStates();
 
   const totalCount = data?.pagination.totalCount || 10;
@@ -36,7 +35,7 @@ const SearchPage = async () => {
 
   const states = citiesNStates?.flatMap((cityState) => cityState.state);
 
-  const cities = citiesNStates?.flatMap((cityState) => cityState.city);
+  const countries = citiesNStates?.flatMap((cityState) => cityState.country);
 
   if (!data) {
     <SectionLayout title={`All Tours`}>
@@ -49,7 +48,7 @@ const SearchPage = async () => {
       <div className="grid grid-cols-8 gap-4">
         {/* Left Sidebar for Filters */}
         <div className="col-span-2 bg-white p-6 border rounded-lg shadow-md">
-          <TourFilters cities={cities} states={states} />
+          <TourFilters countries={countries} states={states} />
         </div>
 
         {/* Tours List */}

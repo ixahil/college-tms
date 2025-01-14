@@ -49,10 +49,13 @@ const LoginPage = () => {
         </div>
       )}
       <SubmitButton className="w-full" />
-      <div className="flex">
+      <div className="flex justify-between">
         <Link href={"/agents/register"} className="flex gap-2">
           <MoveLeft />
           <span>Not have an Account?</span>
+        </Link>
+        <Link href={"/"} className="flex gap-2">
+          <span>Are you an User?</span>
         </Link>
       </div>
     </form>

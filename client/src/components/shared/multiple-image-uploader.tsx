@@ -6,7 +6,7 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Trash, Edit } from "lucide-react";
 
-const MultiImageUploader = ({
+export const MultiImageUploader = ({
   name,
   label,
   required,
@@ -16,7 +16,7 @@ const MultiImageUploader = ({
   required: boolean;
 }) => {
   const { setValue, getValues, formState } = useFormContext();
-  const initialValues = getValues(name);
+  const initialValues = getValues("images");
   const [removedFiles, setRemovedFiles] = useState<string[]>([]);
 
   const [localFiles, setLocalFiles] = useState<(File | string)[]>(
@@ -26,7 +26,6 @@ const MultiImageUploader = ({
       ? [initialValues]
       : []
   );
-
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const handleAdd = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,7 +33,7 @@ const MultiImageUploader = ({
     if (selectedFiles) {
       const newFiles = Array.from(selectedFiles);
       const updatedFiles = [...localFiles, ...newFiles];
-      setValue(name, updatedFiles); // Store file objects
+      setValue(name, updatedFiles);
       setLocalFiles(updatedFiles);
     }
   };

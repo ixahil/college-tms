@@ -52,6 +52,8 @@ const TourLandingPage = async ({ params }: Props) => {
   // Fetch tour details by ID
   const { data } = await getTourById(id);
 
+  const itinerary = data?.itinerary ? JSON.parse(data?.itinerary) : [];
+
   return (
     <SectionLayout title={data?.title}>
       <Separator />
@@ -61,11 +63,11 @@ const TourLandingPage = async ({ params }: Props) => {
         <Carousel>
           <CarouselContent>
             {data.images.map((image) => (
-              <CarouselItem key={image.url}>
+              <CarouselItem key={image}>
                 <div className="h-96 relative rounded-lg">
                   <Image
-                    src={image.url}
-                    alt={image.url}
+                    src={image}
+                    alt={image}
                     layout="fill" // This will make the image fill the container
                     objectFit="cover" // Ensures the image maintains aspect ratio and covers the container
                     className="rounded-lg"
@@ -87,7 +89,6 @@ const TourLandingPage = async ({ params }: Props) => {
             <div className="my-4 flex gap-4">
               <Badge>{data?.country}</Badge>
               <Badge>{data?.state}</Badge>
-              <Badge>{data?.city}</Badge>
             </div>
           </div>
           <Button asChild>
@@ -95,20 +96,32 @@ const TourLandingPage = async ({ params }: Props) => {
           </Button>
         </div>
         <p className="text-lg text-gray-700">{data?.description}</p>
-        <p className="text-lg font-semibold mt-4">Price: ₹{data?.price}</p>
+        <div className="flex items-center gap-4">
+          <p className="text-lg font-semibold mt-4">Price: ₹{data?.price}</p>
+          <p className="text-lg font-semibold mt-4 line-through">
+            ₹{data?.price}
+          </p>
+        </div>
       </div>
       {/* Static Itinerary Section */}
       <div className="my-8">
         <h3 className="text-2xl font-semibold mb-4">Tour Itinerary</h3>
         <ul className="space-y-4">
-          {itinerary.map((item) => (
-            <li key={item.day} className="p-4 border rounded-lg shadow-md">
-              <h4 className="text-xl font-medium mb-2">
-                Day {item.day}: {item.title}
-              </h4>
-              <p className="text-gray-700">{item.details}</p>
-            </li>
-          ))}
+          {itinerary.map((item, idx) => {
+            return (
+              <li
+                key={item.label + idx}
+                className="p-4 border rounded-lg shadow-md"
+              >
+                <h4 className="text-xl font-medium mb-2">{item.label}</h4>
+                {/* Ensure you're passing an object with the __html property */}
+                <p
+                  className="text-gray-700"
+                  dangerouslySetInnerHTML={{ __html: item.description }}
+                ></p>
+              </li>
+            );
+          })}
         </ul>
       </div>
     </SectionLayout>

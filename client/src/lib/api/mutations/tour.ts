@@ -40,7 +40,7 @@ export const createTour = async (
 
 export const updateTour = async (
   id: number,
-  data: TourFields
+  data: FormData
 ): Promise<{ data: TourFields | null; error: string | null }> => {
   const cookieStore = await cookies();
   const token = cookieStore?.get("access_token")?.value;
@@ -53,9 +53,8 @@ export const updateTour = async (
   const res = await fetch(`${baseUrl}/agents/tours/${id}`, {
     method: "POST",
     credentials: "include",
-    body: JSON.stringify(data),
+    body: data,
     headers: {
-      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
   });
@@ -66,6 +65,7 @@ export const updateTour = async (
   }
 
   const responseData = await res.json();
+
   if (responseData.status === "Success" && responseData.data) {
     const tour: TourFields = responseData.data;
     revalidateTag("tours");

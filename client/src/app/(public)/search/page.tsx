@@ -36,7 +36,7 @@ const SearchPage = async () => {
 
   const states = citiesNStates?.flatMap((cityState) => cityState.state);
 
-  const cities = citiesNStates?.flatMap((cityState) => cityState.city);
+  const countries = citiesNStates?.flatMap((cityState) => cityState.country);
 
   if (!data?.tours) {
     <SectionLayout title={`Search Results for ${search}`}>
@@ -51,7 +51,7 @@ const SearchPage = async () => {
       <div className="grid grid-cols-8 gap-4">
         {/* Left Sidebar for Filters */}
         <div className="col-span-2 bg-white p-6 border rounded-lg shadow-md">
-          <TourFilters cities={cities} states={states} />
+          <TourFilters countries={countries} states={states} />
         </div>
         <div className="col-span-6">
           <div className="grid grid-cols-3 gap-4">

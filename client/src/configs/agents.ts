@@ -58,7 +58,7 @@ export const agentMenu = {
   },
 };
 
-export const agentFormControls = {
+export const TourFormControls = {
   left: [
     {
       groupLabel: "Basic Info",
@@ -96,6 +96,46 @@ export const agentFormControls = {
       ],
     },
     {
+      groupLabel: "Itinerary Details",
+      items: [
+        {
+          label: "Itinerary",
+          name: "itinerary",
+          componentType: "itinerary",
+          type: "itinerary",
+          required: false,
+        },
+      ],
+    },
+  ],
+
+  right: [
+    {
+      groupLabel: "Status",
+      items: [
+        {
+          label: "Featured",
+          name: "isFeatured",
+          componentType: "checkbox",
+          type: "checkbox",
+          required: false,
+        },
+        {
+          label: "Tour Status",
+          name: "status",
+          componentType: "select",
+          type: "select",
+          defaultValue: "INACTIVE",
+          required: true,
+          placeholder: "Select Status",
+          options: [
+            { handle: "ACTIVE", label: "Active" },
+            { handle: "DRAFT", label: "Draft" },
+          ],
+        },
+      ],
+    },
+    {
       groupLabel: "Pricing",
       items: [
         {
@@ -120,53 +160,61 @@ export const agentFormControls = {
         },
       ],
     },
-  ],
-
-  right: [
-    {
-      groupLabel: "Status",
-      items: [
-        {
-          label: "Tour Status",
-          name: "status",
-          componentType: "select",
-          type: "select",
-          defaultValue: "INACTIVE",
-          required: true,
-          placeholder: "Select Status",
-          options: [
-            { handle: "ACTIVE", label: "Active" },
-            { handle: "DRAFT", label: "Draft" },
-          ],
-        },
-      ],
-    },
     {
       groupLabel: "Location",
       items: [
         {
           label: "City",
           name: "city",
-          componentType: "input",
+          componentType: "select-specified",
           type: "text",
           required: true,
           placeholder: "Enter City",
         },
+        // {
+        //   label: "State",
+        //   name: "state",
+        //   componentType: "select-specified",
+        //   type: "text",
+        //   required: true,
+        //   placeholder: "Enter State",
+        // },
+        // {
+        //   label: "Country",
+        //   name: "country",
+        //   componentType: "select-specified",
+        //   type: "text",
+        //   required: true,
+        //   placeholder: "Enter Country",
+        // },
+      ],
+    },
+    {
+      groupLabel: "Extra Details (Optional)",
+      items: [
         {
-          label: "State",
-          name: "state",
+          label: "Duration",
+          name: "duration",
           componentType: "input",
           type: "text",
-          required: true,
-          placeholder: "Enter State",
+          required: false,
+          placeholder: "e.g. 2 Days 3 Nights",
         },
         {
-          label: "Country",
-          name: "country",
+          label: "Departure Date",
+          name: "departureDate",
           componentType: "input",
           type: "text",
-          required: true,
-          placeholder: "Enter Country",
+          required: false,
+          placeholder: "e.g. Leaves 23 March 24",
+        },
+        {
+          label: "Group Size",
+          name: "groupSize",
+          componentType: "input",
+          type: "text",
+          required: false,
+          placeholder: "e.g. Group of 20 Peoples",
         },
       ],
     },

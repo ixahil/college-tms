@@ -10,7 +10,7 @@ export const getAgentById = asyncHandler(async (req, res, next) => {
 
   const agent = await prisma.agent.findUnique({
     where: {
-      id: parseInt(id),
+      id: id,
     },
     select: {
       name: true,

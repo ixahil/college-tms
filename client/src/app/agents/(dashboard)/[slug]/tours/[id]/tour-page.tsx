@@ -2,7 +2,7 @@
 
 import CommonForm from "@/components/forms/form-component";
 import { Form } from "@/components/ui/form";
-import { agentFormControls } from "@/configs/agents";
+import { TourFormControls } from "@/configs/agents";
 import { updateTour } from "@/lib/api/mutations/tour";
 import { TourSchema } from "@/schemas/tour";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,16 +23,31 @@ export const TourPage = ({ data }: Props) => {
       description: data.description,
       price: data.price,
       comparePrice: data.comparePrice,
-      city: data.city,
       state: data.state,
       country: data.country,
       status: data.status,
-      images: data.images.flatMap((image) => image.url),
+      images: data.images,
+      itinerary: data.itinerary ? JSON.parse(data.itinerary) : [],
+      duration: data.duration || "",
+      departureDate: data.departureDate || "",
+      groupSize: data.groupSize || "",
     },
   });
 
+  console.log(form.formState.errors);
   const onSubmit = async () => {
-    const { error } = await updateTour(data.id, form.getValues());
+    const formData = new FormData();
+
+    Object.entries(form.getValues()).forEach(([key, value]) => {
+      if (key == "itinerary") {
+        formData.append(key, JSON.stringify(value));
+      } else if (Array.isArray(value)) {
+        value.forEach((val) => formData.append(key, val));
+      } else {
+        formData.append(key, value as string | Blob);
+      }
+    });
+    const { error } = await updateTour(data.id, formData);
     if (!error) {
       toast.success("Tour Updated Successfully");
       router.back();
@@ -41,7 +56,7 @@ export const TourPage = ({ data }: Props) => {
 
   return (
     <Form {...form}>
-      <CommonForm onSubmit={onSubmit} formControls={agentFormControls} />
+      <CommonForm onSubmit={onSubmit} formControls={TourFormControls} />
     </Form>
   );
 };

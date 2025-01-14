@@ -13,6 +13,8 @@ cloudinary.config({
 export const fileUploader = async (files, fileName, folder) => {
   const uploadResults = [];
 
+  console.log(uploadResults);
+
   if (Array.isArray(files)) {
     for (const image of files) {
       try {

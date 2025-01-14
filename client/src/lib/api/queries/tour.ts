@@ -1,10 +1,15 @@
 import { cookies } from "next/headers";
 import { baseUrl } from "..";
 
+type ReturnData = {
+  tours: TourFields[];
+  pagination: Pagination;
+};
+
 export const getAgentTours = async (
   queryParams: string
 ): Promise<{
-  data: TourFields | null;
+  data: ReturnData | null;
   error: string | null;
 }> => {
   const cookieStore = await cookies();
@@ -32,11 +37,14 @@ export const getAgentTours = async (
     console.error(`Error in Fetching Agents Tours`);
     return { error: `Error in Fetching Agents Tours`, data: null };
   }
-  const responseData = await res.json();
+
+  const responseData: TourResponse = await res.json();
+
   if (responseData.status === "Success" && responseData.data) {
-    const agent: TourFields = responseData.data;
-    return { data: agent, error: null };
+    const data = responseData.data;
+    return { data, error: null };
   }
+
   return { data: null, error: "Unexpected response format" };
 };
 

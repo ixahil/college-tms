@@ -1,38 +1,36 @@
 "use client";
-import React, { useEffect, useState } from "react";
+
+import React, { Suspense, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter, useSearchParams } from "next/navigation";
-import { getTourById } from "@/lib/api/queries/client-queries";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-const BookingPage = () => {
+const BookingPageContent = () => {
   const [tour, setTour] = useState(null);
   const {
     register,
     handleSubmit,
     formState: { errors },
-    reset,
   } = useForm();
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const tourId = searchParams.get("tour") as string | null;
+  const tourId = searchParams.get("tour");
 
   useEffect(() => {
     if (tourId) {
       const fetchTour = async () => {
-        const { data } = await getTourById(tourId);
+        const res = await fetch(`/api/tours/${tourId}`);
+        const data = await res.json();
         setTour(data);
       };
-
       fetchTour();
     }
   }, [tourId]);
 
-  const onSubmit = async (data) => {
-    console.log("Booking Data:", data);
-
+  const onSubmit = async (formData) => {
+    console.log("Booking Data:", formData);
     router.push("/thank-you");
   };
 
@@ -78,7 +76,6 @@ const BookingPage = () => {
               )}
             </div>
 
-            {/* Email Input */}
             <div className="mb-4">
               <label
                 htmlFor="email"
@@ -103,7 +100,6 @@ const BookingPage = () => {
               )}
             </div>
 
-            {/* Tour Date */}
             <div className="mb-4">
               <label
                 htmlFor="tourDate"
@@ -138,6 +134,14 @@ const BookingPage = () => {
         </div>
       )}
     </div>
+  );
+};
+
+const BookingPage = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <BookingPageContent />
+    </Suspense>
   );
 };
 

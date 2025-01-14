@@ -1,13 +1,15 @@
 import { prisma } from "#lib/prisma.js";
 import { asyncHandler } from "#middlewares/index.js";
 import { AppResponse } from "#utils/index.js";
+import { getToursWithPagination } from "#utils/tours.js";
 
 export const getAllTours = asyncHandler(async (req, res, next) => {
   const { limit = 10, page = 1, order = "asc", search = "" } = req.query;
 
-  const city = Array.isArray(req.query?.city)
-    ? req.query.city
-    : req.query?.city?.split(",");
+  const country = Array.isArray(req.query?.country)
+    ? req.query.country
+    : req.query?.country?.split(",");
+
   const state = Array.isArray(req.query?.state)
     ? req.query.state
     : req.query?.state?.split(",");
@@ -18,11 +20,12 @@ export const getAllTours = asyncHandler(async (req, res, next) => {
 
   const data = await getToursWithPagination(
     search,
-    city,
     state,
+    country,
     pageNumber,
     pageSize,
-    sortOrder
+    sortOrder,
+    { status: "ACTIVE" }
   );
 
   res.status(200).json(new AppResponse(200, data, "Success"));
@@ -31,9 +34,10 @@ export const getAllTours = asyncHandler(async (req, res, next) => {
 export const getAllFeaturedTours = asyncHandler(async (req, res, next) => {
   const { limit = 10, page = 1, order = "asc", search = "" } = req.query;
 
-  const city = Array.isArray(req.query.city)
-    ? req.query.city
-    : [req.query.city];
+  const country = Array.isArray(req.query?.country)
+    ? req.query.country
+    : req.query?.country?.split(",");
+
   const state = Array.isArray(req.query.state)
     ? req.query.state
     : [req.query.stae];
@@ -44,12 +48,12 @@ export const getAllFeaturedTours = asyncHandler(async (req, res, next) => {
 
   const data = await getToursWithPagination(
     search,
-    city,
     state,
+    country,
     pageNumber,
     pageSize,
     sortOrder,
-    { isFeatured: true }
+    { isFeatured: true, status: "ACTIVE" }
   );
 
   // const tours = await prisma.tour.findMany({
@@ -89,9 +93,10 @@ export const getAllFeaturedTours = asyncHandler(async (req, res, next) => {
 export const getAllInternationTours = asyncHandler(async (req, res, next) => {
   const { limit = 10, page = 1, order = "asc", search = "" } = req.query;
 
-  const city = Array.isArray(req.query.city)
-    ? req.query.city
-    : [req.query.city];
+  const country = Array.isArray(req.query?.country)
+    ? req.query.country
+    : req.query?.country?.split(",");
+
   const state = Array.isArray(req.query.state)
     ? req.query.state
     : [req.query.stae];
@@ -102,8 +107,8 @@ export const getAllInternationTours = asyncHandler(async (req, res, next) => {
 
   const data = await getToursWithPagination(
     search,
-    city,
     state,
+    country,
     pageNumber,
     pageSize,
     sortOrder,
@@ -113,6 +118,7 @@ export const getAllInternationTours = asyncHandler(async (req, res, next) => {
           contains: "India",
         },
       },
+      status: "ACTIVE",
     }
   );
 
@@ -122,14 +128,7 @@ export const getAllInternationTours = asyncHandler(async (req, res, next) => {
 export const getTourById = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
   const tour = await prisma.tour.findUnique({
-    where: { id: parseInt(id) },
-    include: {
-      images: {
-        select: {
-          url: true,
-        },
-      },
-    },
+    where: { id: id },
   });
 
   res.status(200).json(new AppResponse(200, tour, "Success"));
@@ -138,9 +137,9 @@ export const getTourById = asyncHandler(async (req, res, next) => {
 export const getCitiesNStates = asyncHandler(async (req, res, next) => {
   const { limit = 10, page = 1, order = "asc", search = "" } = req.query;
 
-  const city = Array.isArray(req.query.city)
-    ? req.query.city
-    : [req.query.city];
+  const country = Array.isArray(req.query.country)
+    ? req.query.country
+    : [req.query.country];
   const state = Array.isArray(req.query.state)
     ? req.query.state
     : [req.query.stae];
@@ -150,9 +149,9 @@ export const getCitiesNStates = asyncHandler(async (req, res, next) => {
   const sortOrder = order === "asc" ? "asc" : "desc";
 
   const data = await prisma.tour.findMany({
-    distinct: ["city", "state"],
+    distinct: ["country", "state"],
     select: {
-      city: true,
+      country: true,
       state: true,
     },
   });
@@ -160,69 +159,63 @@ export const getCitiesNStates = asyncHandler(async (req, res, next) => {
   res.status(200).json(new AppResponse(200, data, "Success"));
 });
 
-const getToursWithPagination = async (
-  search,
-  city,
-  state,
-  pageNumber,
-  pageSize,
-  sortOrder,
-  conditions = {}
-) => {
-  const query = {
-    where: {
-      AND: [
-        {
-          title: {
-            startsWith: search || "",
-          },
-          status: "ACTIVE",
-        },
-        {
-          OR: city?.map((c) => ({
-            city: {
-              contains: c,
-            },
-          })),
-        },
-        {
-          OR: state?.map((s) => ({
-            state: {
-              contains: s,
-            },
-          })),
-        },
-      ],
-      ...conditions,
-    },
-    orderBy: {
-      createdAt: sortOrder,
-    },
-    skip: (pageNumber - 1) * pageSize,
-    take: pageSize,
-    include: {
-      images: {
-        select: {
-          url: true,
-        },
-      },
-    },
-  };
+// const getToursWithPagination = async (
+//   search,
+//   city,
+//   state,
+//   pageNumber,
+//   pageSize,
+//   sortOrder,
+//   conditions = {}
+// ) => {
+//   const query = {
+//     where: {
+//       AND: [
+//         {
+//           title: {
+//             startsWith: search || "",
+//             endsWith: search || "",
+//           },
+//           status: "ACTIVE",
+//         },
+//         {
+//           OR: city?.map((c) => ({
+//             city: {
+//               contains: c,
+//             },
+//           })),
+//         },
+//         {
+//           OR: state?.map((s) => ({
+//             state: {
+//               contains: s,
+//             },
+//           })),
+//         },
+//       ],
+//       ...conditions,
+//     },
+//     orderBy: {
+//       createdAt: sortOrder,
+//     },
+//     skip: (pageNumber - 1) * pageSize,
+//     take: pageSize,
+//   };
 
-  // Using a single transaction to get both tours and total count
-  const [tours, totalCount] = await prisma.$transaction([
-    prisma.tour.findMany(query),
-    prisma.tour.count({ where: query.where }),
-  ]);
+//   // Using a single transaction to get both tours and total count
+//   const [tours, totalCount] = await prisma.$transaction([
+//     prisma.tour.findMany(query),
+//     prisma.tour.count({ where: query.where }),
+//   ]);
 
-  const totalPages = Math.ceil(totalCount / pageSize); // Calculate total pages
+//   const totalPages = Math.ceil(totalCount / pageSize); // Calculate total pages
 
-  return {
-    tours,
-    pagination: {
-      totalCount,
-      totalPages,
-      currentPage: pageNumber,
-    },
-  };
-};
+//   return {
+//     tours,
+//     pagination: {
+//       totalCount,
+//       totalPages,
+//       currentPage: pageNumber,
+//     },
+//   };
+// };

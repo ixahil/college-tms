@@ -25,12 +25,12 @@ const Tours = async () => {
     `limit=${limit}&page=${page}&order=${order}&search=${search}`
   );
 
-  const totalCount = 10;
+  const totalCount = data?.pagination.totalCount;
 
-  const totalPages = Math.ceil(totalCount / limit);
+  const totalPages = data?.pagination.totalPages;
 
   return (
-    <ContentLayout title="Tours" className="space-y-8">
+    <ContentLayout title={`Tours (${totalCount})`} className="space-y-8">
       <div className="flex justify-between">
         <div className="">
           <Filters />
@@ -49,7 +49,7 @@ const Tours = async () => {
             <p className="text-destructive">{error}</p>
           </div>
         ) : (
-          <DataTable data={data} columns={columns} />
+          <DataTable data={data?.tours} columns={columns} />
         )}
         <TablePagination page={page} totalPages={totalPages} />
       </div>

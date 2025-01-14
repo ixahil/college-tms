@@ -20,17 +20,17 @@ export const siteConfig = {
           children: [
             {
               label: "Chandigarh",
-              url: "/tours?city=chandigarh",
+              url: "/tours?state=chandigarh",
               children: [],
             },
             {
               label: "Delhi",
-              url: "/tours?city=delhi",
+              url: "/tours?state=delhi",
               children: [],
             },
             {
               label: "Haryana",
-              url: "/tours?city=haryana",
+              url: "/tours?state=haryana",
               children: [],
             },
           ],
@@ -41,38 +41,38 @@ export const siteConfig = {
           children: [
             {
               label: "Arunachal Pradesh",
-              url: "/tours?city=ap",
+              url: "/tours?state=ap",
               children: [],
             },
             {
               label: "Assam",
-              url: "/tours?city=assam",
+              url: "/tours?state=assam",
               children: [],
             },
             {
               label: "Manipur",
-              url: "/tours?city=manipur",
+              url: "/tours?state=manipur",
               children: [],
             },
           ],
         },
         {
           label: "East India",
-          url: "/tours?city=east-india",
+          url: "/tours?state=east-india",
           children: [
             {
               label: "Andaman Nicobar Islands",
-              url: "/tours?city=andaman",
+              url: "/tours?state=andaman",
               children: [],
             },
             {
               label: "Bihar",
-              url: "/tours?city=bihar",
+              url: "/tours?state=bihar",
               children: [],
             },
             {
               label: "Jharkhand",
-              url: "/tours?city=jharkhand",
+              url: "/tours?state=jharkhand",
               children: [],
             },
           ],
@@ -83,12 +83,12 @@ export const siteConfig = {
           children: [
             {
               label: "Chattisgarh",
-              url: "/tours?city=chattisgarh",
+              url: "/tours?state=chattisgarh",
               children: [],
             },
             {
               label: "Madhya Pradesh",
-              url: "/tours?city=mp",
+              url: "/tours?state=mp",
               children: [],
             },
           ],
@@ -99,22 +99,22 @@ export const siteConfig = {
           children: [
             {
               label: "Dadra and Nagar Haveli",
-              url: "/tours?city=dadra",
+              url: "/tours?state=dadra",
               children: [],
             },
             {
               label: "Goa",
-              url: "/tours?city=goa",
+              url: "/tours?state=goa",
               children: [],
             },
             {
               label: "Gujarat",
-              url: "/tours?city=gujarat",
+              url: "/tours?state=gujarat",
               children: [],
             },
             {
               label: "Maharashtra",
-              url: "/tours?city=maharashtra",
+              url: "/tours?state=maharashtra",
               children: [],
             },
           ],
@@ -125,22 +125,22 @@ export const siteConfig = {
           children: [
             {
               label: "Andhra Pradesh",
-              url: "/tours?city=andhra",
+              url: "/tours?state=andhra",
               children: [],
             },
             {
               label: "Karnataka",
-              url: "/tours?city=karnataka",
+              url: "/tours?state=karnataka",
               children: [],
             },
             {
               label: "Kerala",
-              url: "/tours?city=kerala",
+              url: "/tours?state=kerala",
               children: [],
             },
             {
               label: "Lakshadweep",
-              url: "/tours?city=lakshadweep",
+              url: "/tours?state=lakshadweep",
               children: [],
             },
           ],

@@ -8,7 +8,7 @@ const SearchComponent = ({ className }: { className?: string }) => {
         <input
           name="search"
           type="text"
-          placeholder="Search..."
+          placeholder="Where would you like to go?"
           className="w-full p-4 text-lg text-black rounded-md shadow-md border-2"
         />
         <button

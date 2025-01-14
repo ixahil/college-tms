@@ -3,16 +3,12 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
 }
 
-// enum Role{
-//   Admin
-// }
-
 model Agent {
-  id                              Int       @id @default(autoincrement())
+  id                              String    @id @default(auto()) @map("_id") @db.ObjectId
   name                            String
   email                           String    @unique
   password                        String
@@ -28,11 +24,11 @@ model Agent {
 }
 
 model User {
-  id                              Int       @id @default(autoincrement())
+  id                              String    @id @default(auto()) @map("_id") @db.ObjectId
   name                            String
   email                           String    @unique
   password                        String
-  role                            String    @default("USER")
+  role                            Role      @default(USER)
   isEmailVerified                 Boolean   @default(false)
   refreshToken                    String?
   forgotPasswordToken             String?
@@ -43,38 +39,75 @@ model User {
   bookings                        Booking[]
 }
 
-model Image {
-  id     Int    @id @default(autoincrement())
-  url    String
-  tourId Int // Foreign key to Tour
-  tour   Tour   @relation(fields: [tourId], references: [id])
-}
-
 model Tour {
-  id           Int       @id @default(autoincrement())
-  title        String
-  description  String
-  price        Float
-  comparePrice Float
-  city         String
-  state        String
-  country      String
-  status       String    @default("DRAFT")
-  isFeatured   Boolean?  @default(false)
-  images       Image[]
-  agentId      Int
-  agent        Agent     @relation(fields: [agentId], references: [id])
-  bookings     Booking[]
-  createdAt    DateTime  @default(now())
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  title         String
+  description   String
+  price         Float
+  comparePrice  Float
+  // city          String
+  state         String
+  country       String
+  itinerary     Json
+  tags          String[]
+  duration      String?
+  departureDate String?
+  groupSize     String?
+  status        Status    @default(DRAFT)
+  isFeatured    Boolean   @default(false)
+  images        String[]
+  agentId       String    @db.ObjectId
+  agent         Agent     @relation(fields: [agentId], references: [id])
+  bookings      Booking[]
+  createdAt     DateTime  @default(now())
 }
 
 model Booking {
-  id            Int      @id @default(autoincrement())
-  userId        Int
-  tourId        Int
-  bookingDate   DateTime
-  status        String   @default("PENDING")
-  paymentStatus String   @default("unpaid")
-  user          User     @relation(fields: [userId], references: [id])
-  tour          Tour     @relation(fields: [tourId], references: [id])
+  id              String          @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String          @db.ObjectId
+  tourId          String          @db.ObjectId
+  personDetails   PersonDetails[]
+  bookingDate     DateTime
+  status          BookingStatus   @default(PENDING)
+  paymentStatus   PaymentStatus   @default(UNPAID)
+  specialRequests String?
+  totalCost       Float
+  user            User            @relation(fields: [userId], references: [id])
+  tour            Tour            @relation(fields: [tourId], references: [id])
+}
+
+type PersonDetails {
+  fullName    String
+  age         Int
+  gender      Gender // Enum for gender
+  email       String
+  phoneNumber String
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum Status {
+  DRAFT
+  ACTIVE
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  UNPAID
+  PAID
+  REFUNDED
 }
