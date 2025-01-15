@@ -129,6 +129,9 @@ export const getTourById = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
   const tour = await prisma.tour.findUnique({
     where: { id: id },
+    include: {
+      agent: true,
+    },
   });
 
   res.status(200).json(new AppResponse(200, tour, "Success"));

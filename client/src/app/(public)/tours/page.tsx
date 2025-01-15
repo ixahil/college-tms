@@ -26,8 +26,9 @@ const SearchPage = async () => {
   const { data } = await getTours(
     `limit=${limit}&page=${page}&order=${order}&search=${search}&state=${state}&country=${country}`
   );
-  console.log(data);
   const { data: citiesNStates } = await getCitiesNStates();
+
+  console.log(citiesNStates);
 
   const totalCount = data?.pagination.totalCount || 10;
 
@@ -60,9 +61,7 @@ const SearchPage = async () => {
                   <CardContent className="relative rounded-lg overflow-hidden flex aspect-square items-center justify-center shadow-lg transition-transform transform hover:scale-105">
                     <Image
                       src={
-                        item.images[0]?.url
-                          ? item.images[0]?.url
-                          : "/placeholder.webp"
+                        item.images[0] ? item.images[0] : "/placeholder.webp"
                       }
                       alt={item.title}
                       layout="fill"

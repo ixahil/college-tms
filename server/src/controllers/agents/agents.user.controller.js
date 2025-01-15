@@ -18,5 +18,5 @@ export const getAgentById = asyncHandler(async (req, res, next) => {
     },
   });
 
-  res.status(201).json(new AppResponse(200, agent, "Success"));
+  res.status(200).json(new AppResponse(200, agent, "Success"));
 });
