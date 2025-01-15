@@ -24,8 +24,8 @@ export const getAllTours = asyncHandler(async (req, res, next) => {
     country,
     pageNumber,
     pageSize,
-    sortOrder,
-    { status: "ACTIVE" }
+    sortOrder
+    // { status: "ACTIVE" }
   );
 
   res.status(200).json(new AppResponse(200, data, "Success"));

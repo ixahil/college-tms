@@ -1,6 +1,6 @@
-import { countryData, stateData, cityData } from "@/configs/constant";
-import { useEffect, useState } from "react";
-import { useFormContext } from "react-hook-form"; // Ensure this is imported if using react-hook-form
+import Papa from "papaparse";
+import { useEffect, useMemo, useState } from "react";
+import { useFormContext } from "react-hook-form";
 import {
   FormControl,
   FormField,
@@ -23,15 +23,59 @@ const CountryCityStateSelect = ({
   label: string;
   name: string;
 }) => {
-  const [selectedCountry, setSelectedCountry] = useState("India");
-  const [availableStates, setAvailableStates] = useState(stateData["India"]);
   const { formState, control } = useFormContext();
 
+  const [countries, setCountries] = useState<string[]>([]);
+  const [states, setStates] = useState<any[]>([]);
+  const [selectedCountry, setSelectedCountry] = useState(
+    formState.defaultValues.country || ""
+  );
+  const [availableStates, setAvailableStates] = useState<any[]>([]);
+  // Fetch and parse CSV
   useEffect(() => {
-    if (selectedCountry) {
-      setAvailableStates(stateData[selectedCountry] || []);
+    async function fetchAndParseCSV() {
+      try {
+        const response = await fetch("/states.csv"); // Fetch CSV from public folder
+        if (!response.ok) throw new Error("Failed to fetch CSV file");
+
+        const csvText = await response.text();
+
+        Papa.parse(csvText, {
+          header: true,
+          complete: (result) => {
+            if (result.data && result.data.length > 0) {
+              const uniqueCountries = [
+                ...new Set(result.data.map((item: any) => item.country_name)),
+              ];
+              setCountries(uniqueCountries);
+              setStates(result.data);
+            } else {
+              console.warn("CSV contains no data.");
+            }
+          },
+          error: (error) => {
+            console.error("Error parsing CSV:", error);
+          },
+        });
+      } catch (error) {
+        console.error("Error fetching or parsing CSV:", error);
+      }
     }
-  }, [selectedCountry]);
+
+    fetchAndParseCSV();
+  }, []);
+
+  const filteredStates = useMemo(() => {
+    if (!selectedCountry) return [];
+    return states
+      .filter((state: any) => state.country_name === selectedCountry)
+      .flatMap((state) => state.name); // Extracts the state name
+  }, [selectedCountry, states]);
+
+  // Update available states when filteredStates change
+  useEffect(() => {
+    setAvailableStates(filteredStates);
+  }, [filteredStates]);
 
   return (
     <div className="w-full space-y-4">
@@ -55,9 +99,9 @@ const CountryCityStateSelect = ({
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                {countryData.map((option) => (
-                  <SelectItem key={option.handle} value={option.handle}>
-                    {option.label}
+                {countries.map((option, idx) => (
+                  <SelectItem key={option + idx} value={option}>
+                    {option}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -89,8 +133,8 @@ const CountryCityStateSelect = ({
               </FormControl>
               <SelectContent>
                 {availableStates.map((option) => (
-                  <SelectItem key={option.handle} value={option.handle}>
-                    {option.label}
+                  <SelectItem key={option} value={option}>
+                    {option}
                   </SelectItem>
                 ))}
               </SelectContent>

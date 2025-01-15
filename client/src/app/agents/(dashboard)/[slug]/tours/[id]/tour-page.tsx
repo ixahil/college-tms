@@ -34,7 +34,6 @@ export const TourPage = ({ data }: Props) => {
     },
   });
 
-  console.log(form.formState.errors);
   const onSubmit = async () => {
     const formData = new FormData();
 

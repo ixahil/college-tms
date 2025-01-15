@@ -21,7 +21,7 @@ import { MultiImageUploader } from "../shared/multiple-image-uploader";
 import SingleImageUploader from "../shared/single-image-uploader";
 import ItineraryElement from "../shared/ItineraryElement";
 import { Checkbox } from "../ui/checkbox";
-import CountryCityStateSelect from "../shared/CountryCityStateSelect";
+import CountryCityStateSelect from "../shared/Country-State-Select";
 
 type FormElemRendererProps = {
   elem: CommonFormItem;
